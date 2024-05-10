@@ -17,7 +17,7 @@ public class TestMsProjectApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.from(MsProjectApplication::main).with(TestMsProjectApplication.class).run(args);
+        SpringApplication.from(MsProductApplication::main).with(TestMsProjectApplication.class).run(args);
     }
 
 }
