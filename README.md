@@ -42,3 +42,70 @@
 * [ArgoCD](https://argo-cd.readthedocs.io/en/stable/getting_started/)
 * [Jenkins](https://www.jenkins.io/sigs/docs/)
 * [Vagrant](https://developer.hashicorp.com/vagrant/docs)
+
+
+## Mavem commands:
+```maven
+./mvnw clean package -Dmaven.test.skip=true -f ms-product/pom.xml
+```
+
+## Docker commands:
+```maven
+docker ps | grep microservices-
+docker ps -a | grep microservices-
+docker images | grep microservices-
+docker stop microservices-nginx microservices-db-ms-product && docker rm microservices-nginx microservices-db-ms-product
+
+docker stop microservices-ms-product && docker rm microservices-ms-product
+
+docker build -t microservices-java-microservices-ms-product --build-arg="ENV_IMG=openjdk:22-ea-21-slim-bullseye" --build-arg="JAR_NAME=ms-product-0.0.1-SNAPSHOT" -f docker/Dockerfile.ms.java .
+
+docker run -p 8080:8080 microservices-java-microservices-ms-product:0.0.1-SNAPSHOT
+
+docker volume ls
+docker volume rm microservices-db-ms-product
+docker logs microservices-db-ms-product -f
+docker network ls
+docker network rm microservices-network
+docker exec -it microservices-db-ms-product /bin/sh
+docker exec microservices-db-ms-product echo $DB_URL
+```
+
+## Docker compose commands:
+```docker
+docker compose up -d
+docker compose stop
+```
+
+## Postgres DB - Connect on a container:
+```bash
+docker exec -u root  -it microservices-db-ms-product psql --host localhost -U app -d ms-product -p 5432
+
+# Show data bases:
+\l
+
+# Show Users:
+\du;
+
+# Connect to a database:
+\connect dbname
+\c dbname
+
+# Show relations(tables)
+\dt
+\dt+
+```
+
+## Postgres DB - Get a dump from a container:
+```bash
+docker exec -it microservices-db-ms-product /bin/sh
+pg_dump -U app -W -d ms-product > ms-product.sql
+docker cp microservices-db-ms-product:/ms-product.sql ms-product/ms-product-dump.sql
+```
+
+## Shell commands:
+```bash
+chmod +X install.sh
+bash -c "source install.sh; ms-install"
+bash -c "source install.sh; ms-build-docker-img ms-product 0.0.1-SNAPSHOT"
+```

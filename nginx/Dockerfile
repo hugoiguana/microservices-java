@@ -1,6 +1,6 @@
 
 ARG ENV_IMG=nginx:stable-alpine3.19
-FROM ENV_IMG
+FROM $ENV_IMG
 
 #RUN mkdir -p /etc/nginx/external
 
