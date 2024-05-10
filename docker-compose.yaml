@@ -1,0 +1,64 @@
+version: '3.9'
+
+services:
+
+  microservices-nginx:
+    build:
+      context: ./nginx
+    container_name: $ENV_NGINX_CONTAINER_NAME
+    command: [ nginx, '-g', 'daemon off;' ]
+    restart: on-failure
+    ports:
+      - '9090:80'
+      #volumes:
+      #- ./nginx/:/etc/nginx
+    networks:
+      - microservices-network
+
+  microservices-db-ms-product:
+    image: $ENV_POSTGRES_DB_IMG
+    restart: always
+    container_name: $ENV_MS_PRODUCT_CONTAINER_NAME
+    environment:
+      POSTGRES_DB: $ENV_MS_PRODUCT_DB_NAME
+      POSTGRES_USER: $ENV_MS_PRODUCT_DB_USER
+      POSTGRES_PASSWORD: $ENV_MS_PRODUCT_DB_PASSWORD
+    ports:
+      - 5433:5432
+    volumes:
+      - ./ms-product/db/scripts/:/docker-entrypoint-initdb.d
+      - microservices-db-ms-product:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+
+  microservices-ms-product:
+    build: 
+      context: ./ms-product
+      args:
+        - JAR_NAME=$ENV_MS_PRODUCT_JAR_NAME
+    container_name: microservices-ms-product
+    environment:
+      - APP_PORT=$ENV_MS_APP_PORT
+      - DB_URL=$ENV_MS_PRODUCT_DB_URL
+      - DB_USERNAME=$ENV_MS_PRODUCT_DB_USER
+      - DB_PASSWORD=$ENV_MS_PRODUCT_DB_PASSWORD
+      - ACTIVE_PROFILE=$ENV_MS_ACTIVE_PROFILE
+      - DB_SCHEMA=$ENV_MS_DB_SCHEMA
+      - SPRING_FLYWAY_ENABLED=$ENV_MS_PRODUCT_FLYWAY_ENABLED
+      - DB_FLYWAY_TABLE=$ENV_MS_DB_FLYWAY_TABLE
+    ports:
+      - 9091:8080
+    networks:
+      - microservices-network
+    depends_on:
+      - microservices-db-ms-product
+
+
+networks:
+  microservices-network:
+    driver: bridge
+    name: microservices-network
+
+volumes:
+  microservices-db-ms-product:
+    name: microservices-db-ms-product

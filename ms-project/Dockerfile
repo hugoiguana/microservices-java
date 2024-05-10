@@ -1,7 +1,7 @@
 #FROM openjdk:17-alpine
 #FROM openjdk:17.0.2-jdk-slim-buster
-FROM openjdk:22-ea-21-slim-bullseye
-
+ARG ENV_IMG=nginx:stable-alpine3.19
+FROM ENV_IMG
 
 ARG JAR_NAME=ms-product-0.0.1-SNAPSHOT
 ENV JAR_NAME_ENV=${JAR_NAME}
